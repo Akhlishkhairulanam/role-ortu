@@ -75,11 +75,11 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login.post') }}">
                     @csrf
 
                     <div class="mb-3">
-                        <label class="form-label">Username / NIS</label>
+                        <label class="form-label">Username (Admin/Ortu) atau NIS (Siswa)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                             <input type="text" name="username"
@@ -114,11 +114,11 @@
                 </form>
 
                 <hr class="my-4">
-
                 <div class="text-center text-muted small">
-                    <p class="mb-1">Login sebagai:</p>
-                    <p><strong>Admin:</strong> gunakan username admin</p>
-                    <p><strong>Orang Tua:</strong> gunakan NIS anak</p>
+                    <p class="mb-1">Panduan Login:</p>
+                    <p><strong>Admin</strong> → Username & Password Admin</p>
+                    <p><strong>Orang Tua</strong> → Username akun orang tua</p>
+                    <p><strong>Siswa</strong> → NIS & Password siswa</p>
                 </div>
             </div>
         </div>

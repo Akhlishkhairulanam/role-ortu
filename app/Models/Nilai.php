@@ -40,7 +40,7 @@ class Nilai extends Model
     // Auto calculate nilai akhir
     public static function boot()
     {
-        parent::boot();
+        Parent::boot();
 
         static::saving(function ($nilai) {
             $nilai->nilai_akhir = (

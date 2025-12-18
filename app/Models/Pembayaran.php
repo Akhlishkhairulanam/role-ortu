@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Pembayaran extends Model
 {
     protected $table = 'pembayaran';
-
     protected $fillable = [
         'tagihan_id',
         'no_invoice',
@@ -20,7 +19,7 @@ class Pembayaran extends Model
     ];
 
     protected $casts = [
-        'tanggal_bayar' => 'date',
+        'tanggal_bayar' => 'datetime',
     ];
 
     public function tagihan()
@@ -28,12 +27,17 @@ class Pembayaran extends Model
         return $this->belongsTo(Tagihan::class);
     }
 
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
         static::creating(function ($pembayaran) {
-            $pembayaran->no_invoice = 'INV/' . date('Ymd') . '/' . str_pad(Pembayaran::count() + 1, 5, '0', STR_PAD_LEFT);
+            $pembayaran->no_invoice = 'INV/' . now()->format('Ymd') . '/' . str_pad(
+                self::max('id') + 1,
+                5,
+                '0',
+                STR_PAD_LEFT
+            );
+            $pembayaran->status_verifikasi ??= 'pending';
+            $pembayaran->tanggal_bayar ??= now();
         });
     }
 }

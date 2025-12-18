@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
 
         // Custom
         'role' => \App\Http\Middleware\CheckRole::class,
-        'parent.access' => \App\Http\Middleware\ParentAccessControl::class,
+        'parent.access' => \App\Http\Middleware\ParentAccess::class,
+        'student.access' => \App\Http\Middleware\StudentAccess::class,
     ];
 }

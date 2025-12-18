@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
-use App\Models\Tagihan;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -31,27 +30,37 @@ class PembayaranController extends Controller
 
     public function verify(Pembayaran $pembayaran)
     {
-        $pembayaran->update(['status_verifikasi' => 'verified']);
+        if ($pembayaran->status_verifikasi !== 'pending') {
+            return back()->with('error', 'Pembayaran sudah diproses.');
+        }
 
-        // Update status tagihan jadi lunas
-        $pembayaran->tagihan->update(['status' => 'lunas']);
+        $pembayaran->update([
+            'status_verifikasi' => 'verified'
+        ]);
+
+        // SATU-SATUNYA TEMPAT tagihan jadi lunas
+        $pembayaran->tagihan->update([
+            'status' => 'lunas'
+        ]);
 
         return back()->with('success', 'Pembayaran berhasil diverifikasi.');
     }
 
+
     public function reject(Request $request, Pembayaran $pembayaran)
     {
         $request->validate([
-            'catatan' => 'required|string',
+            'catatan' => 'required|string'
         ]);
 
         $pembayaran->update([
             'status_verifikasi' => 'rejected',
-            'catatan' => $request->catatan,
+            'catatan' => $request->catatan
         ]);
 
         return back()->with('success', 'Pembayaran ditolak.');
     }
+
 
     public function exportPdf(Request $request)
     {

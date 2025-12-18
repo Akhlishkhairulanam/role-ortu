@@ -3,89 +3,119 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException;
-
 
 class LoginController extends Controller
 {
+    /**
+     * Form login
+     */
     public function showLoginForm()
     {
-        if (Auth::check()) {
-            return $this->redirectBasedOnRole(Auth::user());
-        }
-
         return view('auth.login');
     }
 
+    /**
+     * Proses login
+     */
     public function login(Request $request)
     {
-
+        // Validasi input
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Coba login dengan username atau NIS
-        $user = \App\Models\User::where('username', $credentials['username'])
-            ->orWhere('nis', $credentials['username'])
-            ->first();
+        // Cari user
+        $user = User::where('username', $credentials['username'])->first();
 
         if (!$user) {
             throw ValidationException::withMessages([
-                'username' => ['Username atau NIS tidak ditemukan.'],
+                'username' => ['Username / NIS tidak ditemukan.'],
             ]);
         }
 
         if (!$user->is_active) {
             throw ValidationException::withMessages([
-                'username' => ['Akun Anda tidak aktif. Hubungi admin sekolah.'],
+                'username' => ['Akun Anda tidak aktif. Silakan hubungi admin.'],
             ]);
         }
 
-        if (Auth::attempt(['username' => $user->username, 'password' => $credentials['password']], $request->filled('remember'))) {
-            $request->session()->regenerate();
-
-            // Log aktivitas login
-            activity()
-                ->causedBy(Auth::user())
-                ->log('User ' . Auth::user()->name . ' melakukan login');
-
-            return $this->redirectBasedOnRole(Auth::user());
+        // Attempt login
+        if (!Auth::attempt(
+            [
+                'username' => $credentials['username'],
+                'password' => $credentials['password'],
+            ],
+            $request->boolean('remember')
+        )) {
+            throw ValidationException::withMessages([
+                'password' => ['Password yang Anda masukkan salah.'],
+            ]);
         }
 
-        throw ValidationException::withMessages([
-            'password' => ['Password yang Anda masukkan salah.'],
-        ]);
+        // 🔑 Penting untuk cegah 419
+        $request->session()->regenerate();
+
+        // Log aktivitas (opsional, kalau pakai spatie activitylog)
+        if (function_exists('activity')) {
+            activity()
+                ->causedBy(Auth::user())
+                ->log('User login');
+        }
+
+        return $this->redirectBasedOnRole(Auth::user());
     }
 
+    /**
+     * Logout
+     */
     public function logout(Request $request)
     {
-        // Log aktivitas logout
-        activity()
-            ->causedBy(Auth::user())
-            ->log('User ' . Auth::user()->name . ' melakukan logout');
+        if (Auth::check() && function_exists('activity')) {
+            activity()
+                ->causedBy(Auth::user())
+                ->log('User logout');
+        }
 
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
+        return redirect()
+            ->route('login')
+            ->with('success', 'Anda berhasil logout.');
     }
 
-    protected function redirectBasedOnRole($user)
+    /**
+     * Redirect sesuai role
+     */
+    protected function redirectBasedOnRole(User $user)
     {
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
+        return match ($user->role) {
+            'admin'   => redirect()->route('admin.dashboard'),
+            'parent'  => redirect()->route('parent.dashboard'),
+            'student' => redirect()->route('student.dashboard'),
+            default   => $this->logoutAndBack(),
+        };
+    }
 
-        if ($user->isParent()) {
-            return redirect()->route('parent.dashboard');
-        }
+    /**
+     * Jika role tidak valid
+     */
+    protected function logoutAndBack()
+    {
+        Auth::logout();
 
-        return redirect('/');
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+
+        return redirect()
+            ->route('login')
+            ->with('error', 'Role akun tidak dikenali.');
     }
 }

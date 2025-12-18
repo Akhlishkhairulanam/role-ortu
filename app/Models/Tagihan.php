@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Tagihan extends Model
 {
     protected $table = 'tagihan';
-
     protected $fillable = [
         'student_id',
         'jenis_pembayaran_id',
@@ -35,5 +34,12 @@ class Tagihan extends Model
     public function pembayaran()
     {
         return $this->hasMany(Pembayaran::class);
+    }
+
+    public function pembayaranAktif()
+    {
+        return $this->hasOne(Pembayaran::class)
+            ->whereIn('status_verifikasi', ['pending', 'verified'])
+            ->latest();
     }
 }

@@ -69,7 +69,6 @@ class TagihanController extends Controller
             'bulan' => 'nullable|string',
             'tahun' => 'required|string',
             'jumlah' => 'required|numeric|min:0',
-            'status' => 'required|in:belum_lunas,lunas',
             'tanggal_jatuh_tempo' => 'nullable|date',
         ]);
 

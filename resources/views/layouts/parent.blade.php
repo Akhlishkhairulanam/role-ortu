@@ -1,4 +1,4 @@
-{{-- resources/views/layouts/parent.blade.php --}}
+{{-- resources/views/layouts/Parent.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 
@@ -62,41 +62,52 @@
                     <i class="fas fa-graduation-cap fa-3x mb-2"></i>
                     <h5>Portal Orang Tua</h5>
                 </div>
+
                 <nav class="nav flex-column p-3">
-                    <a class="nav-link {{ request()->routeIs('parent.dashboard') ? 'active' : '' }}"
-                        href="{{ route('parent.dashboard') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.dashboard') ? 'active' : '' }}"
+                        href="{{ route('Parent.dashboard') }}">
                         <i class="fas fa-home me-2"></i> Dashboard
                     </a>
-                    <a class="nav-link {{ request()->routeIs('parent.profil-anak') ? 'active' : '' }}"
-                        href="{{ route('parent.profil-anak') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.profil-anak') ? 'active' : '' }}"
+                        href="{{ route('Parent.profil-anak') }}">
                         <i class="fas fa-user me-2"></i> Profil Anak
                     </a>
-                    <a class="nav-link {{ request()->routeIs('parent.jadwal.*') ? 'active' : '' }}"
-                        href="{{ route('parent.jadwal.index') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.jadwal.*') ? 'active' : '' }}"
+                        href="{{ route('Parent.jadwal.index') }}">
                         <i class="fas fa-calendar-alt me-2"></i> Jadwal Pelajaran
                     </a>
-                    <a class="nav-link {{ request()->routeIs('parent.nilai.*') ? 'active' : '' }}"
-                        href="{{ route('parent.nilai.index') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.nilai.*') ? 'active' : '' }}"
+                        href="{{ route('Parent.nilai.index') }}">
                         <i class="fas fa-chart-line me-2"></i> Nilai & Raport
                     </a>
-                    <a class="nav-link {{ request()->routeIs('parent.pembayaran.*') ? 'active' : '' }}"
-                        href="{{ route('parent.pembayaran.index') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.pembayaran.*') ? 'active' : '' }}"
+                        href="{{ route('Parent.pembayaran.index') }}">
                         <i class="fas fa-money-bill-wave me-2"></i> Pembayaran
                     </a>
+
                     <hr class="bg-light">
-                    <a class="nav-link {{ request()->routeIs('parent.ganti-password') ? 'active' : '' }}"
-                        href="{{ route('parent.ganti-password') }}">
+
+                    <a class="nav-link {{ request()->routeIs('Parent.ganti-password') ? 'active' : '' }}"
+                        href="{{ route('Parent.ganti-password') }}">
                         <i class="fas fa-key me-2"></i> Ganti Password
                     </a>
+
                     <a class="nav-link" href="#"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt me-2"></i> Logout
                     </a>
+
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                         @csrf
                     </form>
                 </nav>
             </div>
+
 
             {{-- Main Content --}}
             <div class="col-md-10 p-0">

@@ -136,7 +136,7 @@ class StudentController extends Controller
             'username' => $student->nis,
             'nis' => $student->nis,
             'password' => Hash::make($defaultPassword),
-            'role' => 'parent',
+            'role' => 'Parent',
             'is_active' => true,
         ]);
 
